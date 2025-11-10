@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Slack
+Comment=Slack
+Exec=/usr/bin/flatpak run --branch=stable --arch=aarch64 --command=/app/bin/chromium --file-forwarding org.chromium.Chromium --app="https://plan42-ai.slack.com"
+Terminal=false
+Type=Application
+Icon=/usr/share/icons/hicolor/512x512/apps/slack.png
+Categories=Network;Chat;

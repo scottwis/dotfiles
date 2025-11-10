@@ -1,0 +1,13 @@
+[gpg]
+	format = ssh
+	
+[user]
+	signingkey = /home/scott/.ssh/github-signing
+	email = scott@agile.security
+	name = Scott Wisniewski
+	
+[commit]
+	gpgsign = true
+
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
