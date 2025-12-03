@@ -1,0 +1,4 @@
+10c10
+< GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS0,921600"
+---
+> GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS0,921600 nvidia-drm.modeset=1"

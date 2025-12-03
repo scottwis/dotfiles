@@ -5,6 +5,7 @@ set -e
 GOVERSION=1.25.5
 GREEN='\e[32m'
 YELLOW='\e[33m'
+RED='\e[31m]'
 BOLD='\e[1m'
 RESET='\e[0m'
 
@@ -89,6 +90,7 @@ copy_dgx_spark_config() {
     
     sudo cp ~/code/dotfiles/etc/apt/preferences.d/* /etc/apt/preferences.d
     sudo cp ~/code/dotfiles/etc/apt/sources.list.d/* /etc/apt/sources.list.d
+    sudo cp ~/code/dotfiles/usr/share/keyrings/pop-os.gpg /usr/share/keyrings
     echo "===================================="
 }
 
@@ -102,13 +104,39 @@ install_on_dgx_spark() {
          cosmic-session \
 	 zsh \
 	 curl \
-	 wget
-    sudo apt install flatpak
+	 wget \
+	 emacs-nox \
+	 fonts-powerline \
+	 flatpak \
+	 power-profiles-daemon
+
     flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     flatpak install flathub org.chromium.Chromium -y
-    curl https://dl.google.com/go/go$GOVERSION.linux-arm64.tar.gz -o ~/Downloads/go$GOVERSION.tgz
-    pushd ~/Downloads
-    sudo tar -zxvf ~/Downloads/go$GOVERSION.tgz -C /usr/local
+    echo "===================================="
+
+    echo "===================================="
+    if [ -d /usr/local/go ]; then
+	echo -e "${YELLOW}Skipping go install: already installed${RESET}"
+    else
+	echo -e "${GREEN}Installing go${RESET}"
+	curl https://dl.google.com/go/go$GOVERSION.linux-arm64.tar.gz -o ~/Downloads/go$GOVERSION.tgz
+	pushd ~/Downloads
+	sudo tar -zxvf ~/Downloads/go$GOVERSION.tgz -C /usr/local
+	
+    fi
+    echo "===================================="
+
+    echo "===================================="
+    if [ ! -f /etc/default/grub ]; then
+	echo -e "${RED}ERROR: /etc/default/grub not found${RESET}"
+	exit -1
+    elif grep "nvidia-drm.modeset=1" /etc/default/grub; then
+	echo -e "${YELLOW}skipping drm modeset enablement: already enabled${RESET}"
+    else
+	echo -e "${GREEN}enabling drm modeset in grub config"
+	sudo patch --forward /etc/default/grub ~/code/dotfiles/grub.patch
+	sudo update-grub
+    fi
     echo "===================================="
 }
 
@@ -127,7 +155,7 @@ install_oh_my_zsh() {
     if [ -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ]; then
        echo -e "${YELLOW}Skipping zsh-autosuggestions plugin: already installed${RESET}"
     else
-	echo -e "${GREEN}Installing zsh-autosuggestions plugin: already installed${RESET}"
+	echo -e "${GREEN}Installing zsh-autosuggestions plugin"
 	git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     fi
     echo "===================================="	      
@@ -135,9 +163,12 @@ install_oh_my_zsh() {
 
 install_rust() {
     echo "===================================="
-    echo -e "${GREEN}installing rust${RESET}"
-    
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    if [ -d ~/.cargo ]; then
+	echo -e "${YELLOW}skipping rust: already installed${RESET}"	
+    else
+	echo -e "${GREEN}installing rust${RESET}"	
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    fi
     echo "===================================="    
 }
 	 
