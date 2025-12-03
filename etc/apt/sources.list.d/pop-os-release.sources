@@ -1,0 +1,6 @@
+Types: deb
+URIs: https://apt.pop-os.org/release
+Suites: noble
+Components: main
+Signed-By: /usr/share/keyrings/pop-os.gpg
+
