@@ -5,7 +5,7 @@ set -e
 GOVERSION=1.25.5
 GREEN='\e[32m'
 YELLOW='\e[33m'
-RED='\e[31m]'
+RED='\e[31m'
 BOLD='\e[1m'
 RESET='\e[0m'
 
@@ -108,7 +108,10 @@ install_on_dgx_spark() {
 	 emacs-nox \
 	 fonts-powerline \
 	 flatpak \
-	 power-profiles-daemon
+	 power-profiles-daemon \
+	 terraform \
+	 packer \
+	 helm
 
     flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     flatpak install flathub org.chromium.Chromium -y
@@ -122,7 +125,7 @@ install_on_dgx_spark() {
 	curl https://dl.google.com/go/go$GOVERSION.linux-arm64.tar.gz -o ~/Downloads/go$GOVERSION.tgz
 	pushd ~/Downloads
 	sudo tar -zxvf ~/Downloads/go$GOVERSION.tgz -C /usr/local
-	
+	popd	
     fi
     echo "===================================="
 
@@ -136,6 +139,24 @@ install_on_dgx_spark() {
 	echo -e "${GREEN}enabling drm modeset in grub config"
 	sudo patch --forward /etc/default/grub ~/code/dotfiles/grub.patch
 	sudo update-grub
+    fi
+    echo "===================================="
+
+    echo "===================================="
+    if [ -f ~/go/bin/k9s ]; then
+	echo -e "${YELLOW}skipping k9s install: alredy installed${RESET}"
+    else
+	echo -e "${GREEN}installing k9s${RESET}"
+	go install github.com/derailed/k9s@latest
+    fi
+    echo "===================================="
+
+    echo "===================================="
+    if which kubectl; then
+	echo -e "${YELLOW}sipping kubectl install: already installed${REST}"
+    else
+	echo -e "${GREEN}installing kubectl${REST}"
+	sudo snap install kubectl --classic
     fi
     echo "===================================="
 }
@@ -171,7 +192,52 @@ install_rust() {
     fi
     echo "===================================="    
 }
-	 
+
+install_aws_cli() {
+    echo "===================================="    
+    if which aws; then
+	echo -e "${YELLOW}skipping aws cli install: already installed${REST}"
+    else
+	echo -e "${GREEN}installing aws cli${RESET}"
+	curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o ~/Downloads/awscliv2.zip
+	pushd ~/Downloads 
+	unzip awscliv2.zip
+	sudo ./aws/install
+	popd	
+    fi
+    echo "===================================="    
+}
+
+bootstrap_aws_config() {
+    echo "===================================="
+    if [ -f ~/.aws/config ]; then
+	echo -e "${YELLOW}skipping bootstrap of aws config: ~/.aws/config already exists${RESET}"
+    else
+	echo -e "${GREEN}bootstrapping aws config${RESET}"
+	pushd ~/code/terraform-account-factory
+	make bootstrap
+	popd
+    fi
+        echo "===================================="
+}
+
+configure_kubectl_contexts() {
+    echo "===================================="
+    echo -e "${GREEN}configuring eks contexts${RESET}"
+    AWS_PROFILE="event-horizon-api-dev-us-east-2-admin" aws eks --region us-east-2 update-kubeconfig --name event-horizon-api-eks
+    AWS_PROFILE="compute-001-dev-us-east-2-admin" aws eks --region us-east-2 update-kubeconfig --name compute-001-dev
+    echo "===================================="	 
+}
+
+indicate_done() {
+    echo -e "${RED}********************************************************${RESET}"
+    echo -e "${RED}*                                                      *${RESET}"
+    echo -e "${RED}* System configured successfully.                      *${RESET}"
+    echo -e "${RED}*                                                      *${RESET}"
+    echo -e "${RED}* NOTE: If this is a fresh install, you need to reboot.*${RESET}"
+    echo -e "${RED}*                                                      *${RESET}"    
+    echo -e "${RED}********************************************************${RESET}"
+}
 
 checkout_repos
 copy_personal_config
@@ -179,3 +245,7 @@ copy_dgx_spark_config
 install_on_dgx_spark
 install_oh_my_zsh
 install_rust
+install_aws_cli
+bootstrap_aws_config
+configure_kubectl_contexts
+indicate_done
