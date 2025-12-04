@@ -102,18 +102,19 @@ install_on_dgx_spark() {
 	sudo apt update
 	sudo apt upgrade -y
 	sudo apt install -y \
-	 nvtop \
-	 cosmic-session \
-	 zsh \
-	 curl \
-	 wget \
-	 emacs-nox \
-	 fonts-powerline \
-	 flatpak \
-	 power-profiles-daemon \
-	 terraform \
-	 packer \
-	 helm
+		nvtop \
+		cosmic-session \
+		zsh \
+		curl \
+		wget \
+		emacs-nox \
+		fonts-powerline \
+		flatpak \
+		power-profiles-daemon \
+		terraform \
+		packer \
+		helm \
+		postgresql-client
 
 	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	flatpak install flathub org.chromium.Chromium -y
@@ -159,6 +160,16 @@ install_on_dgx_spark() {
 	else
 		echo -e "${GREEN}installing kubectl${REST}"
 		sudo snap install kubectl --classic
+	fi
+	echo "===================================="
+
+	echo "===================================="
+	if which node; then
+		echo -e "${YELLOW}skipping nodejs installation: already installed${RESET}"
+	else
+		echo -e "${GREEN}installing nodejs${RESET}"
+		curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+		sudo apt update && sudo apt install -y nodejs
 	fi
 	echo "===================================="
 }
@@ -282,6 +293,16 @@ install_golang_ci_lint() {
 	echo "===================================="
 }
 
+install_pnpm() {
+	echo "===================================="
+	if which pnpm; then
+		echo -e "${YELLOW}skipping pnpm install: already installed${REST}"
+	else
+		echo -e "${GREEN}installing pnpm${REST}"
+		wget -qO- https://get.pnpm.io/install.sh | sh -
+	fi
+}
+
 indicate_done() {
 	echo ""
 	echo -e "${RED}************************************************************${RESET}"
@@ -304,4 +325,5 @@ install_aws_cli
 bootstrap_aws_config
 configure_kubectl_contexts
 install_golang_ci_lint
+install_pnpm
 indicate_done
