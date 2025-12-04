@@ -114,7 +114,8 @@ install_on_dgx_spark() {
 		terraform \
 		packer \
 		helm \
-		postgresql-client
+		postgresql-client \
+		xclip
 
 	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	flatpak install flathub org.chromium.Chromium -y
