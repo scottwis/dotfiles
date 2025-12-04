@@ -3,6 +3,8 @@
 set -e
 
 GOVERSION=1.25.5
+GOLANG_CI_LINT_VERSION=2.7.0
+
 GREEN='\e[32m'
 YELLOW='\e[33m'
 RED='\e[31m'
@@ -196,7 +198,7 @@ install_rust() {
 install_aws_cli() {
 	echo "===================================="
 	if which aws; then
-		echo -e "${YELLOW}skipping aws cli install: already installed${REST}"
+		echo -e "${YELLOW}skipping aws cli install: already installed${RESET}"
 	else
 		echo -e "${GREEN}installing aws cli${RESET}"
 		curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o ~/Downloads/awscliv2.zip
@@ -269,7 +271,19 @@ configure_kubectl_contexts() {
 	echo "===================================="
 }
 
+install_golang_ci_lint() {
+	echo "===================================="
+	if which golang-ci-lint; then
+		echo -e "${YELLOW}skipping glang-ci-lint install: already installed${REST}"
+	else
+		echo -e "${GREEN}installing glang-ci-lint install${RESET}"
+		go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v${GOLANG_CI_LINT_VERSION}
+	fi
+	echo "===================================="
+}
+
 indicate_done() {
+	echo ""
 	echo -e "${RED}************************************************************${RESET}"
 	echo -e "${RED}*                                                          *${RESET}"
 	echo -e "${RED}* System configured successfully.                          *${RESET}"
@@ -277,6 +291,7 @@ indicate_done() {
 	echo -e "${RED}* NOTE: If this is a fresh install, you need to reboot.    *${RESET}"
 	echo -e "${RED}*                                                          *${RESET}"
 	echo -e "${RED}************************************************************${RESET}"
+	echo ""
 }
 
 checkout_repos
@@ -288,4 +303,5 @@ install_rust
 install_aws_cli
 bootstrap_aws_config
 configure_kubectl_contexts
+install_golang_ci_lint
 indicate_done
