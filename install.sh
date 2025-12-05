@@ -177,6 +177,15 @@ install_on_dgx_spark() {
 		sudo apt update && sudo apt install -y nodejs
 	fi
 	echo "===================================="
+
+	echo "===================================="
+	if which tailscale; then
+		echo -e "${YELLOW}skipping tailscale install: already installed"
+	else
+		echo -e "${GREEN}installing tailscale"
+		curl -fsSL https://tailscale.com/install.sh | sh
+	fi
+	echo "===================================="
 }
 
 install_oh_my_zsh() {
@@ -281,9 +290,16 @@ bootstrap_aws_config() {
 
 configure_kubectl_contexts() {
 	echo "===================================="
-	echo -e "${GREEN}configuring eks contexts${RESET}"
-	AWS_PROFILE="event-horizon-api-dev-us-east-2-admin" aws eks --region us-east-2 update-kubeconfig --name event-horizon-api-eks
-	AWS_PROFILE="compute-001-dev-us-east-2-admin" aws eks --region us-east-2 update-kubeconfig --name compute-001-dev
+	if [ -f ~/.kube/config ] && (grep "event-horizon-api-eks" ~/.kube/config && grep "compute-001-dev" ~/.kube/config) > /dev/null ; then
+		echo -e "${YELLOW}Skipping event-horizon-api-eks config${RESET}"
+	else
+		echo -e "${GREEN}configuring event-horizon-api-eks config contexts${RESET}"
+		if ! aws sts get-caller-identity --profile root-account-admin 2>&1 > /dev/null; then
+			aws sso login --profile root-account-admin
+		fi
+		AWS_PROFILE="event-horizon-api-dev-us-east-2-admin" aws eks --region us-east-2 update-kubeconfig --name event-horizon-api-eks
+		AWS_PROFILE="compute-001-dev-us-east-2-admin" aws eks --region us-east-2 update-kubeconfig --name compute-001-dev
+	fi
 	echo "===================================="
 }
 
