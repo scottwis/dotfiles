@@ -92,7 +92,7 @@ copy_dgx_spark_config() {
 
 	sudo cp ~/code/dotfiles/etc/apt/preferences.d/* /etc/apt/preferences.d
 	sudo cp ~/code/dotfiles/etc/apt/sources.list.d/* /etc/apt/sources.list.d
-	sudo cp ~/code/dotfiles/usr/share/keyrings/pop-os.gpg /usr/share/keyrings
+	sudo cp ~/code/dotfiles/usr/share/keyrings/* /usr/share/keyrings
 	echo "===================================="
 }
 
@@ -130,6 +130,10 @@ install_on_dgx_spark() {
 		pushd ~/Downloads
 		sudo tar -zxvf ~/Downloads/go$GOVERSION.tgz -C /usr/local
 		popd
+	fi
+
+	if ! echo $PATH | grep /usr/local/go/bin; then
+		export PATH="$PATH:/usr/local/go/bin"
 	fi
 	echo "===================================="
 

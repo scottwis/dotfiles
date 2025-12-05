@@ -1,3 +1,4 @@
 Package: *
 Pin: origin apt.pop-os.org
-Pin-Priority: 501
+Pin-Priority: 500
+
