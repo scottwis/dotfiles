@@ -84,6 +84,7 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
+aws_prompt_info(){}
 # User configuration
 
 prompt_context() {
@@ -120,3 +121,11 @@ prompt_context() {
 
 alias pbcopy="xclip -selection clipboard"
 alias pbpaste="xclip -selection clipboard -out"
+
+# pnpm
+export PNPM_HOME="/home/scott/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
