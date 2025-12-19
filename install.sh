@@ -115,7 +115,10 @@ install_on_dgx_spark() {
 		packer \
 		helm \
 		postgresql-client \
-		xclip
+		xclip \
+		libssl-dev \
+		ruby-dev \
+		build-essential
 
 	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	flatpak install flathub org.chromium.Chromium -y
@@ -186,6 +189,15 @@ install_on_dgx_spark() {
 		curl -fsSL https://tailscale.com/install.sh | sh
 	fi
 	echo "===================================="
+
+	echo "===================================="
+	if which fpm; then
+		echo -e "${YELLOW}skipping fpm install: already installed"
+	else
+		echo -e "${GREEN}installing fpm"
+		sudo gem i fpm -f
+	fi
+	echo "===================================="
 }
 
 install_oh_my_zsh() {
@@ -253,6 +265,7 @@ bootstrap_aws_config() {
 	else
 		echo -e "${GREEN}adding event-horizon-api profile to aws config${RESET}"
 		SNIPPET=$(cat <<- EOF
+
 		[profile event-horizon-api]
 		source_profile = event-horizon-api-dev-us-east-2-admin
 		role_arn = arn:aws:iam::802872447332:role/event-horizon-api
@@ -273,11 +286,32 @@ bootstrap_aws_config() {
 	else
 		echo -e "${GREEN}adding event-horizon-ui profile to aws config${RESET}"
 		SNIPPET=$(cat <<- EOF
+
 		[profile event-horizon-ui]
 		source_profile = event-horizon-api-dev-us-east-2-admin
 		role_arn = arn:aws:iam::802872447332:role/event-horizon-ui
 		region = us-east-2
 		role_sesson=scott-debug-shiva
+		output = json
+
+		EOF
+		)
+		cat <<< ${SNIPPET} >> ~/.aws/config
+	fi
+	echo "===================================="
+
+	echo "===================================="
+	if grep "\[profile agent-wrapper\]" ~/.aws/config; then
+		echo -e "${YELLOW}agent-wrapper profile already configured${RESET}"
+	else
+		echo -e "${GREEN}adding agent-wrapper profile to aws config${RESET}"
+		SNIPPET=$(cat <<- EOF
+
+		[profile agent-wrapper]
+		source_profile = compute-001-dev-us-east-2-admin
+		role_arn = arn:aws:iam::357278409228:role/compute-001-dev-agent-wrapper-role
+		region = us-west-2
+		role_session = scott-debug-shiva
 		output = json
 
 		EOF
