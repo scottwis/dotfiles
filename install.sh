@@ -68,7 +68,7 @@ copy_personal_config() {
 	echo "===================================="
 	echo -e "${GREEN}copying config files...${RESET}"
 	pushd ~/code/dotfiles/home/scott
-	cp admin_connect.sh .gitconfig .tmux.conf .zprofile .zshrc ~
+	cp admin_connect.sh .gitconfig .tmux.conf .zprofile .zshrc .manpath ~
 	cd .ssh
 	mkdir -p ~/.ssh
 	cp config ssm-ssh-proxy.sh ~/.ssh
@@ -202,7 +202,15 @@ install_on_dgx_spark() {
 		sudo gem i fpm -f
 	fi
 	echo "===================================="
-}
+
+	echo "===================================="
+	if which checkov || pipx list --short | grep checkov; then
+		echo -e "${YELLOW}skipping checkov install; already installed"
+	else
+		echo -e "${GREEN}installing checkov"
+		pipx install checkov
+	fi
+	echo "===================================="}
 
 install_oh_my_zsh() {
 	echo "===================================="
