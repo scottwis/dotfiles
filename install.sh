@@ -118,7 +118,11 @@ install_on_dgx_spark() {
 		xclip \
 		libssl-dev \
 		ruby-dev \
-		build-essential
+		build-essential \
+		pipx \
+		python3-venv \
+		python3-dev
+
 
 	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	flatpak install flathub org.chromium.Chromium -y
