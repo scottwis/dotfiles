@@ -1,4 +1,0 @@
-Package: firefox*
-Pin: origin apt.pop-os.org
-Pin-Priority: -1
-

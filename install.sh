@@ -122,14 +122,24 @@ install_on_dgx_spark() {
 		pipx \
 		python3-venv \
 		python3-dev \
-		git-filter-repo
+		git-filter-repo \
+		firefox
 
 	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	flatpak install flathub org.chromium.Chromium -y
 	echo "===================================="
 
 	echo "===================================="
-		if [ -d /usr/local/go ]; then
+	if snap list firefox; then
+		echo -e "${GREEN}Uninstalling firefox snap"
+		snap remove firefox
+	else
+		echo -e "${YELLOW}Firefox snap not installed. Skipping removal."
+	fi
+	echo "===================================="
+
+	echo "===================================="
+	if [ -d /usr/local/go ]; then
 		echo -e "${YELLOW}Skipping go install: already installed${RESET}"
 	else
 		echo -e "${GREEN}Installing go${RESET}"
