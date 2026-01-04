@@ -344,6 +344,25 @@ bootstrap_aws_config() {
 	fi
 	echo "===================================="
 
+	echo "===================================="
+	if grep "\[profile health-check\]" ~/.aws/config; then
+		echo -e "${YELLOW}health-check profile already configured${RESET}"
+	else
+		echo -e "${GREEN}adding health-check profile to aws config${RESET}"
+		SNIPPET=$(cat <<- EOF
+
+		[profile health-check]
+		source_profile = event-horizon-api-dev-us-east-2-admin
+		role_arn = arn:aws:iam::802872447332:role/health-check
+		region = us-east-2
+		role_session = scott-debug-shiva
+		output = json
+
+		EOF
+		)
+		cat <<< ${SNIPPET} >> ~/.aws/config
+	fi
+	echo "===================================="
 }
 
 configure_kubectl_contexts() {
