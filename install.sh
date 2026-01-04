@@ -14,25 +14,26 @@ RESET='\e[0m'
 repos=(
 	debugging-sucks/agent-wrapper
 	debugging-sucks/compute-infra
-	debugging-sucks/concurrency
-	debugging-sucks/ecies
+	plan42-ai/concurrency
+	plan42-ai/ecies
 	debugging-sucks/ecr-infra
 	debugging-sucks/event-horizon-api-infra
 	debugging-sucks/event-horizon-api-service
 	debugging-sucks/event-horizon-hub-infra
-	debugging-sucks/event-horizon-sdk-go
+	plan42-ai/sdk-go
 	debugging-sucks/event-horizon-ui
 	debugging-sucks/event-horizon-ui-infra
 	debugging-sucks/event-horizon-webhook-service
 	debugging-sucks/event-horizon-webhook-service-infra
-	debugging-sucks/openid
+	plan42-ai/openid
 	debugging-sucks/proxy-service
 	debugging-sucks/proxy-service-infra
 	debugging-sucks/root-dns-terraform
-	debugging-sucks/sigv4util
+	plan42-ai/sigv4util
 	debugging-sucks/terraform-account-factory
 	debugging-sucks/terraform-manifest-k8s
 	scottwis/dotfiles
+	plan42-ai/cli
 )
 
 checkout_repo() {
