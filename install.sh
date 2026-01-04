@@ -221,7 +221,8 @@ install_on_dgx_spark() {
 		echo -e "${GREEN}installing checkov"
 		pipx install checkov
 	fi
-	echo "===================================="}
+	echo "===================================="
+}
 
 install_oh_my_zsh() {
 	echo "===================================="
