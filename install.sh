@@ -131,11 +131,21 @@ install_on_dgx_spark() {
 	echo "===================================="
 
 	echo "===================================="
+	if grep 'disable-gpu-compositing' ~/.var/app/org.chromium.Chromium/config/chromium-flags.conf; then
+		echo -e "${YELLOW}Flatpack Chromium already configured to disable gpu compositing.${RESET}"
+	else
+		echo -e "${GREEN}Configuring Flatpack Chromium to disable gpu compositing${RESET}"
+		mkdir -p ~/.var/app/org.chromium.Chromium/config
+		printf "%s\n" "--disable-gpu-compositing" >> ~/.var/app/org.chromium.Chromium/config/chromium-flags.conf
+	fi
+	echo "===================================="
+
+	echo "===================================="
 	if snap list firefox; then
 		echo -e "${GREEN}Uninstalling firefox snap"
 		snap remove firefox
 	else
-		echo -e "${YELLOW}Firefox snap not installed. Skipping removal."
+		echo -e "${YELLOW}Firefox snap not installed. Skipping removal.${RESET}"
 	fi
 	echo "===================================="
 
