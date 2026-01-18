@@ -373,6 +373,26 @@ bootstrap_aws_config() {
 		cat <<< ${SNIPPET} >> ~/.aws/config
 	fi
 	echo "===================================="
+
+	echo "===================================="
+	if grep "\[profile timeout-job\]" ~/.aws/config; then
+		echo -e "${YELLOW}timeout-job profile already configured${RESET}"
+	else
+		echo -e "${GREEN}adding timeout-job profile to aws config${RESET}"
+		SNIPPET=$(cat <<- EOF
+
+		[profile timeout-job]
+		source_profile = event-horizon-api-dev-us-east-2-admin
+		role_arn = arn:aws:iam::802872447332:role/timeout-job
+		region = us-east-2
+		role_session = scott-debug-shiva
+		output = json
+
+		EOF
+		)
+		cat <<< ${SNIPPET} >> ~/.aws/config
+	fi
+	echo "===================================="
 }
 
 configure_kubectl_contexts() {
