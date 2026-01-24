@@ -208,7 +208,7 @@ install_on_dgx_spark() {
 
 	echo "===================================="
 	if which tailscale; then
-		echo -e "${YELLOW}skipping tailscale install: already installed"
+		echo -e "${YELLOW}skipping tailscale install: already installed${RESET}"
 	else
 		echo -e "${GREEN}installing tailscale"
 		curl -fsSL https://tailscale.com/install.sh | sh
@@ -217,7 +217,7 @@ install_on_dgx_spark() {
 
 	echo "===================================="
 	if which fpm; then
-		echo -e "${YELLOW}skipping fpm install: already installed"
+		echo -e "${YELLOW}skipping fpm install: already installed${RESET}"
 	else
 		echo -e "${GREEN}installing fpm"
 		sudo gem i fpm -f
@@ -226,12 +226,21 @@ install_on_dgx_spark() {
 
 	echo "===================================="
 	if which checkov || pipx list --short | grep checkov; then
-		echo -e "${YELLOW}skipping checkov install; already installed"
+		echo -e "${YELLOW}skipping checkov install; already installed${RESET}"
 	else
 		echo -e "${GREEN}installing checkov"
 		pipx install checkov
 	fi
 	echo "===================================="
+
+	echo "===================================="
+	if which uv; then
+		echo -e "${YELLOW}skipping uv install: already installed${RESET}"
+	else
+		echo -e "${GREEN}installiung uv${RESET}"
+		sudo snap install astral-uv --classic
+	fi
+
 }
 
 install_oh_my_zsh() {
