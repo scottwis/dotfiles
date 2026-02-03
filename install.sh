@@ -213,7 +213,7 @@ install_on_dgx_spark() {
 	if which tailscale; then
 		echo -e "${YELLOW}skipping tailscale install: already installed${RESET}"
 	else
-		echo -e "${GREEN}installing tailscale"
+		echo -e "${GREEN}installing tailscale${RESET}"
 		curl -fsSL https://tailscale.com/install.sh | sh
 	fi
 	echo "===================================="
@@ -222,7 +222,7 @@ install_on_dgx_spark() {
 	if which fpm; then
 		echo -e "${YELLOW}skipping fpm install: already installed${RESET}"
 	else
-		echo -e "${GREEN}installing fpm"
+		echo -e "${GREEN}installing fpm${RESET}"
 		sudo gem i fpm -f
 	fi
 	echo "===================================="
@@ -231,7 +231,7 @@ install_on_dgx_spark() {
 	if which checkov || pipx list --short | grep checkov; then
 		echo -e "${YELLOW}skipping checkov install; already installed${RESET}"
 	else
-		echo -e "${GREEN}installing checkov"
+		echo -e "${GREEN}installing checkov${RESET}"
 		pipx install checkov
 	fi
 	echo "===================================="
