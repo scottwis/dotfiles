@@ -34,6 +34,8 @@ repos=(
 	debugging-sucks/terraform-manifest-k8s
 	scottwis/dotfiles
 	plan42-ai/cli
+	plan42-ai/agent
+	scottwis/cosmic-term
 )
 
 checkout_repo() {
@@ -124,7 +126,8 @@ install_on_dgx_spark() {
 		python3-venv \
 		python3-dev \
 		git-filter-repo \
-		firefox
+		firefox \
+		just
 
 	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	flatpak install flathub org.chromium.Chromium -y
@@ -240,6 +243,14 @@ install_on_dgx_spark() {
 		echo -e "${GREEN}installiung uv${RESET}"
 		sudo snap install astral-uv --classic
 	fi
+	echo "===================================="
+
+	echo "===================================="
+	echo -e "${GREEN}building custom cosmic-term${RESET}"
+	pusdh ~/code/cosmic-term
+	just build-release
+	popd
+	echo "===================================="
 
 }
 
