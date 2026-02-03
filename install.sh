@@ -175,7 +175,7 @@ install_on_dgx_spark() {
 	elif grep "nvidia-drm.modeset=1" /etc/default/grub; then
 		echo -e "${YELLOW}skipping drm modeset enablement: already enabled${RESET}"
 	else
-		echo -e "${GREEN}enabling drm modeset in grub config"
+		echo -e "${GREEN}enabling drm modeset in grub config${RESET}"
 		sudo patch --forward /etc/default/grub ~/code/dotfiles/grub.patch
 		sudo update-grub
 	fi
