@@ -247,7 +247,7 @@ install_on_dgx_spark() {
 
 	echo "===================================="
 	echo -e "${GREEN}building custom cosmic-term${RESET}"
-	pusdh ~/code/cosmic-term
+	pushd ~/code/cosmic-term
 	just build-release
 	popd
 	echo "===================================="
