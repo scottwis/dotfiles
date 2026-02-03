@@ -244,14 +244,6 @@ install_on_dgx_spark() {
 		sudo snap install astral-uv --classic
 	fi
 	echo "===================================="
-
-	echo "===================================="
-	echo -e "${GREEN}building custom cosmic-term${RESET}"
-	pushd ~/code/cosmic-term
-	just build-release
-	popd
-	echo "===================================="
-
 }
 
 install_oh_my_zsh() {
@@ -463,6 +455,15 @@ indicate_done() {
 	echo ""
 }
 
+hack_cosmic_term() {
+	echo "===================================="
+	echo -e "${GREEN}building custom cosmic-term${RESET}"
+	pushd ~/code/cosmic-term
+	just build-release
+	popd
+	echo "===================================="
+}
+
 checkout_repos
 copy_personal_config
 copy_dgx_spark_config
@@ -474,4 +475,5 @@ bootstrap_aws_config
 configure_kubectl_contexts
 install_golang_ci_lint
 install_pnpm
+hack_cosmic_terrm
 indicate_done
