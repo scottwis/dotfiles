@@ -127,7 +127,8 @@ install_on_dgx_spark() {
 		python3-dev \
 		git-filter-repo \
 		firefox \
-		just
+		just \
+		libxkbcommon-dev
 
 	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	flatpak install flathub org.chromium.Chromium -y
@@ -459,7 +460,7 @@ hack_cosmic_term() {
 	echo "===================================="
 	echo -e "${GREEN}building custom cosmic-term${RESET}"
 	pushd ~/code/cosmic-term
-	just build-release
+	PATH=$PATH:~/.cargo/bin just build-release
 	popd
 	echo "===================================="
 }
@@ -475,5 +476,5 @@ bootstrap_aws_config
 configure_kubectl_contexts
 install_golang_ci_lint
 install_pnpm
-hack_cosmic_terrm
+hack_cosmic_term
 indicate_done
