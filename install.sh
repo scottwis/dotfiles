@@ -127,7 +127,8 @@ install_on_dgx_spark() {
 		git-filter-repo \
 		firefox \
 		just \
-		libxkbcommon-dev
+		libxkbcommon-dev \
+		yq
 
 	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	flatpak install flathub org.chromium.Chromium -y
