@@ -12,7 +12,7 @@ export HISTSIZE=1000000000
 setopt SHARE_HISTORY
 export HISTTIMEFORMAT="[%F %T] "
 setopt EXTENDED_HISTORY
-export GOPRIVATE="github.com/debugging-sucks/*,github.com/plan42-api/*"
+export GOPRIVATE="github.com/debugging-sucks,github.com/plan42-api"
 export EDITOR="emacs"
 
 alias pbcopy="xclip -selection clipboard"
