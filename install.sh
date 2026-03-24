@@ -245,7 +245,20 @@ install_on_dgx_spark() {
 		sudo snap install astral-uv --classic
 	fi
 	echo "===================================="
-}
+
+	echo "===================================="
+	if which gh; then
+		echo -e "${YELLOW}Github cli already installed; skipping${RESET}"
+	else
+		echo -e "${GREEN}Install github cli${RESET}"
+		curl https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
+		sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+		echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+		sudo apt update
+		sudo apt install gh -y
+	fi
+	echo "===================================="
+	}
 
 install_oh_my_zsh() {
 	echo "===================================="
