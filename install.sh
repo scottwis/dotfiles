@@ -147,7 +147,7 @@ install_on_dgx_spark() {
 	echo "===================================="
 	if snap list firefox; then
 		echo -e "${GREEN}Uninstalling firefox snap"
-		snap remove firefox
+		sudo snap remove firefox
 	else
 		echo -e "${YELLOW}Firefox snap not installed. Skipping removal.${RESET}"
 	fi
