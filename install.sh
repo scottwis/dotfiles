@@ -262,7 +262,7 @@ install_oh_my_zsh() {
 	if [ -d ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions ]; then
 		echo -e "${YELLOW}Skipping zsh-autosuggestions plugin: already installed${RESET}"
 	else
-		echo -e "${GREEN}Installing zsh-autosuggestions plugin"
+		echo -e "${GREEN}Installing zsh-autosuggestions plugin${RESET}"
 		git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 	fi
 	echo "===================================="
