@@ -1,0 +1,8 @@
+{
+    (
+        modifiers: [
+            Shift,
+        ],
+        key: "Insert",
+    ): Paste,
+}
