@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 set -e
 
@@ -10,9 +10,9 @@ YELLOW='\e[33m'
 RED='\e[31m'
 BOLD='\e[1m'
 RESET='\e[0m'
+ARCH=$(dpkg --print-architecture)
 
 repos=(
-	debugging-sucks/agent-wrapper
 	debugging-sucks/compute-infra
 	plan42-ai/concurrency
 	plan42-ai/ecies
@@ -70,12 +70,31 @@ copy_personal_config() {
 	echo "===================================="
 	echo -e "${GREEN}copying config files...${RESET}"
 	pushd ~/code/dotfiles/home/scott
-	cp admin_connect.sh .gitconfig .tmux.conf .zprofile .zshrc .manpath ~
+	cp admin_connect.sh .gitconfig .tmux.conf .zprofile .manpath ~
+	cp .zshrc-${HOSTNAME} ~/.zshrc
 	cd .ssh
 	mkdir -p ~/.ssh
 	cp config ssm-ssh-proxy.sh ~/.ssh
 	popd
 	echo "===================================="
+}
+
+copy_popos_config() {
+	echo "===================================="
+	echo -e "${GREEN}copying popos specific config files...${RESET}"
+
+	rsync -avh ~/code/dotfiles/home/scott/.config ~
+
+	sudo mkdir -p /usr/share/backgrounds/scott
+	sudo cp ~/code/dotfiles/usr/share/backgrounds/scott/* /usr/share/backgrounds/scott
+
+	sudo mkdir -p /usr/share/icons/hicolor/512x512/apps
+	sudo cp ~/code/dotfiles/usr/share/icons/hicolor/512x512/apps/* /usr/share/icons/hicolor/512x512/apps
+
+	sudo cp ~/code/dotfiles/etc/apt/sources.list.d/{hashicorp-amd64.list,helm-stable-debian.list} /etc/apt/sources.list.d
+	sudo cp ~/code/dotfiles/usr/share/keyrings/{hashicorp-archive-keyring.gpg,helm.gpg} /usr/share/keyrings
+	echo "===================================="
+
 }
 
 copy_dgx_spark_config() {
@@ -93,12 +112,19 @@ copy_dgx_spark_config() {
 	sudo cp ~/code/dotfiles/usr/share/icons/hicolor/512x512/apps/* /usr/share/icons/hicolor/512x512/apps
 
 	sudo cp ~/code/dotfiles/etc/apt/preferences.d/* /etc/apt/preferences.d
-	sudo cp ~/code/dotfiles/etc/apt/sources.list.d/* /etc/apt/sources.list.d
+	sudo cp ~/code/dotfiles/etc/apt/sources.list.d/{hashicorp-armd64.list,helm-stable-debian.list,pop-os-release.sources} /etc/apt/sources.list.d	
 	sudo cp ~/code/dotfiles/usr/share/keyrings/* /usr/share/keyrings
 	echo "===================================="
 }
 
-install_on_dgx_spark() {
+install_on_popos() {
+	echo "===================================="
+	echo -e "${GREEN}installing popos specific ubuntu packages files...${RESET}"
+	sudo apt install -y snapd openssh-server
+	echo "===================================="
+}
+
+install_on_ubuntu() {
 	echo "===================================="
 	echo -e "${GREEN}installing various ubuntu software packages${RESET}"
 	sudo apt update
@@ -112,7 +138,6 @@ install_on_dgx_spark() {
 		emacs-nox \
 		fonts-powerline \
 		flatpak \
-		power-profiles-daemon \
 		terraform \
 		packer \
 		helm \
@@ -128,29 +153,8 @@ install_on_dgx_spark() {
 		firefox \
 		just \
 		libxkbcommon-dev \
-		yq
-
-	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-	flatpak install flathub org.chromium.Chromium -y
-	echo "===================================="
-
-	echo "===================================="
-	if grep 'disable-gpu-compositing' ~/.var/app/org.chromium.Chromium/config/chromium-flags.conf; then
-		echo -e "${YELLOW}Flatpack Chromium already configured to disable gpu compositing.${RESET}"
-	else
-		echo -e "${GREEN}Configuring Flatpack Chromium to disable gpu compositing${RESET}"
-		mkdir -p ~/.var/app/org.chromium.Chromium/config
-		printf "%s\n" "--disable-gpu-compositing" >> ~/.var/app/org.chromium.Chromium/config/chromium-flags.conf
-	fi
-	echo "===================================="
-
-	echo "===================================="
-	if snap list firefox; then
-		echo -e "${GREEN}Uninstalling firefox snap"
-		sudo snap remove firefox
-	else
-		echo -e "${YELLOW}Firefox snap not installed. Skipping removal.${RESET}"
-	fi
+		yq \
+		tmux
 	echo "===================================="
 
 	echo "===================================="
@@ -158,27 +162,16 @@ install_on_dgx_spark() {
 		echo -e "${YELLOW}Skipping go install: already installed${RESET}"
 	else
 		echo -e "${GREEN}Installing go${RESET}"
-		curl https://dl.google.com/go/go$GOVERSION.linux-arm64.tar.gz -o ~/Downloads/go$GOVERSION.tgz
+		curl https://dl.google.com/go/go$GOVERSION.linux-$ARCH.tar.gz -o ~/Downloads/go$GOVERSION.tgz
 		pushd ~/Downloads
 		sudo tar -zxvf ~/Downloads/go$GOVERSION.tgz -C /usr/local
 		popd
 	fi
+	echo "===================================="
 
+	echo "===================================="
 	if ! echo $PATH | grep /usr/local/go/bin; then
 		export PATH="$PATH:/usr/local/go/bin"
-	fi
-	echo "===================================="
-
-	echo "===================================="
-	if [ ! -f /etc/default/grub ]; then
-		echo -e "${RED}ERROR: /etc/default/grub not found${RESET}"
-		exit -1
-	elif grep "nvidia-drm.modeset=1" /etc/default/grub; then
-		echo -e "${YELLOW}skipping drm modeset enablement: already enabled${RESET}"
-	else
-		echo -e "${GREEN}enabling drm modeset in grub config${RESET}"
-		sudo patch --forward /etc/default/grub ~/code/dotfiles/grub.patch
-		sudo update-grub
 	fi
 	echo "===================================="
 
@@ -258,6 +251,51 @@ install_on_dgx_spark() {
 		sudo apt install gh -y
 	fi
 	echo "===================================="
+}
+
+install_on_dgx_spark() {
+	echo "===================================="
+	echo -e "${GREEN}Installing dgx spark ubuntu packages${RESET}"
+	sudo apt install -y power-profiles-daemon
+	echo "===================================="
+
+	echo "===================================="
+	echo -e "${GREEN}installing chromium flatpak${RESET}"
+	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+	flatpak install flathub org.chromium.Chromium -y
+	echo "===================================="
+
+	echo "===================================="
+	if grep 'disable-gpu-compositing' ~/.var/app/org.chromium.Chromium/config/chromium-flags.conf; then
+		echo -e "${YELLOW}Flatpack Chromium already configured to disable gpu compositing.${RESET}"
+	else
+		echo -e "${GREEN}Configuring Flatpack Chromium to disable gpu compositing${RESET}"
+		mkdir -p ~/.var/app/org.chromium.Chromium/config
+		printf "%s\n" "--disable-gpu-compositing" >> ~/.var/app/org.chromium.Chromium/config/chromium-flags.conf
+	fi
+	echo "===================================="
+
+	echo "===================================="
+	if snap list firefox; then
+		echo -e "${GREEN}Uninstalling firefox snap"
+		sudo snap remove firefox
+	else
+		echo -e "${YELLOW}Firefox snap not installed. Skipping removal.${RESET}"
+	fi
+	echo "===================================="
+
+	echo "===================================="
+	if [ ! -f /etc/default/grub ]; then
+		echo -e "${RED}ERROR: /etc/default/grub not found${RESET}"
+		exit -1
+	elif grep "nvidia-drm.modeset=1" /etc/default/grub; then
+		echo -e "${YELLOW}skipping drm modeset enablement: already enabled${RESET}"
+	else
+		echo -e "${GREEN}enabling drm modeset in grub config${RESET}"
+		sudo patch --forward /etc/default/grub ~/code/dotfiles/grub.patch
+		sudo update-grub
+	fi
+	echo "===================================="
 	}
 
 install_oh_my_zsh() {
@@ -292,7 +330,7 @@ install_rust() {
 	echo "===================================="
 }
 
-install_aws_cli() {
+install_aws_cli_arm64() {
 	echo "===================================="
 	if which aws; then
 		echo -e "${YELLOW}skipping aws cli install: already installed${RESET}"
@@ -306,6 +344,22 @@ install_aws_cli() {
 	fi
 	echo "===================================="
 }
+
+install_aws_cli_amd64() {
+	echo "===================================="
+	if which aws; then
+		echo -e "${YELLOW}skipping aws cli install: already installed${RESET}"
+	else
+		echo -e "${GREEN}installing aws cli${RESET}"
+		curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
+		pushd ~/Downloads
+		unzip awscliv2.zip
+		sudo ./aws/install
+		popd
+	fi
+	echo "===================================="
+}
+
 
 bootstrap_aws_config() {
 	echo "===================================="
@@ -457,7 +511,7 @@ install_pnpm() {
 	fi
 }
 
-indicate_done() {
+indicate_done_arm64() {
 	echo ""
 	echo -e "${RED}************************************************************${RESET}"
 	echo -e "${RED}*                                                          *${RESET}"
@@ -469,15 +523,46 @@ indicate_done() {
 	echo ""
 }
 
+indicate_done_amd64() {
+	echo ""
+	echo -e "${RED}************************************************************${RESET}"
+	echo -e "${RED}*                                                          *${RESET}"
+	echo -e "${RED}* System configured successfully.                          *${RESET}"
+	echo -e "${RED}*                                                          *${RESET}"
+	echo -e "${RED}************************************************************${RESET}"
+	echo ""
+}
+
 checkout_repos
 copy_personal_config
-copy_dgx_spark_config
-install_on_dgx_spark
+if [[ "${HOSTNAME}" == "shiva" ]]; then
+	copy_dgx_spark_config
+	install_on_ubuntu
+	install_on_dgx_spark
+	install_aws_cli_arm64
+elif [[ "${HOSTNAME}" == "colossal" ]]; then
+	copy_popos_config
+	install_on_popos
+	install_on_ubuntu
+	install_aws_cli_amd64
+else
+	echo -e "${RED}ERROR: Uknown host ${HOSTNAME}${RESET}"
+	exit -1
+
+fi
+
 install_oh_my_zsh
 install_rust
-install_aws_cli
 bootstrap_aws_config
 configure_kubectl_contexts
 install_golang_ci_lint
 install_pnpm
-indicate_done
+
+if [[ "${HOSTNAME}" == "shiva" ]]; then
+	indicate_done_arm64
+elif [[ "${HOSTNAME}" == "colossal" ]]; then
+	indicate_done_amd64
+else
+	echo -e "${RED}ERROR: Uknown host ${HOSTNAME}${RESET}"
+	exit -1
+fi
