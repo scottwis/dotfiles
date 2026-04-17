@@ -70,7 +70,7 @@ copy_personal_config() {
 	echo "===================================="
 	echo -e "${GREEN}copying config files...${RESET}"
 	pushd ~/code/dotfiles/home/scott
-	cp admin_connect.sh .gitconfig .tmux.conf .zprofile .manpath ~
+	cp admin_connect.sh fuck_jetbrains.sh .gitconfig .tmux.conf .zprofile .manpath ~
 	cp .zshrc-${HOSTNAME} ~/.zshrc
 	cd .ssh
 	mkdir -p ~/.ssh
