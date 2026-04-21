@@ -35,6 +35,8 @@ repos=(
 	scottwis/dotfiles
 	plan42-ai/cli
 	plan42-ai/agent
+	debugging-sucks/event-horizon-webhook-service
+	debugging-sucks/event-horizon-webhook-service-infra
 )
 
 checkout_repo() {
