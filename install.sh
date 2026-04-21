@@ -1,8 +1,8 @@
-!/bin/bash
+#!/bin/bash
 
 set -e
 
-GOVERSION=1.25.5
+GOVERSION=1.26.2
 GOLANG_CI_LINT_VERSION=2.8.0
 
 GREEN='\e[32m'
