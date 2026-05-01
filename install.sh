@@ -3,7 +3,7 @@
 set -e
 
 GOVERSION=1.26.2
-GOLANG_CI_LINT_VERSION=2.8.0
+GOLANG_CI_LINT_VERSION=2.12.1
 
 GREEN='\e[32m'
 YELLOW='\e[33m'
@@ -114,7 +114,7 @@ copy_dgx_spark_config() {
 	sudo cp ~/code/dotfiles/usr/share/icons/hicolor/512x512/apps/* /usr/share/icons/hicolor/512x512/apps
 
 	sudo cp ~/code/dotfiles/etc/apt/preferences.d/* /etc/apt/preferences.d
-	sudo cp ~/code/dotfiles/etc/apt/sources.list.d/{hashicorp-armd64.list,helm-stable-debian.list,pop-os-release.sources} /etc/apt/sources.list.d	
+	sudo cp ~/code/dotfiles/etc/apt/sources.list.d/{hashicorp-arm64.list,helm-stable-debian.list,pop-os-release.sources} /etc/apt/sources.list.d	
 	sudo cp ~/code/dotfiles/usr/share/keyrings/* /usr/share/keyrings
 	echo "===================================="
 }
