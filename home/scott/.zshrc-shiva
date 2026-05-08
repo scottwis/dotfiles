@@ -88,7 +88,11 @@ aws_prompt_info(){}
 # User configuration
 
 prompt_context() {
-  prompt_segment 208 black 'scott@shiva'
+  if [[ "${TERM}" == "linux" ]]; then
+      prompt_segment yellow black 'scott@shiva'
+  else
+      prompt_segment 208 black 'scott@shiva'
+  fi
 }
 
 

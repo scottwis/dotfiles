@@ -88,7 +88,7 @@ aws_prompt_info(){}
 # User configuration
 
 prompt_context() {
-  prompt_segment 9 black 'scott@colossal'
+  prompt_segment red black 'scott@colossal'
 }
 
 
