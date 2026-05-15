@@ -16,15 +16,15 @@ repos=(
 	debugging-sucks/compute-infra
 	plan42-ai/concurrency
 	plan42-ai/ecies
-	debugging-sucks/ecr-infra
+	plan42-ai/ecr-infra
 	debugging-sucks/event-horizon-api-infra
 	debugging-sucks/event-horizon-api-service
 	debugging-sucks/event-horizon-hub-infra
 	plan42-ai/sdk-go
 	debugging-sucks/event-horizon-ui
 	debugging-sucks/event-horizon-ui-infra
-	debugging-sucks/event-horizon-webhook-service
-	debugging-sucks/event-horizon-webhook-service-infra
+	plan42-ai/webhook
+	plan42-ai/webhook-infra
 	plan42-ai/openid
 	debugging-sucks/proxy-service
 	debugging-sucks/proxy-service-infra
