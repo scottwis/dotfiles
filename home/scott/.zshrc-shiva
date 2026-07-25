@@ -79,7 +79,8 @@ plugins=(
     docker
     aws
     terraform
-    zsh-autosuggestions    
+    zsh-autosuggestions
+    conda
 )
 
 source $ZSH/oh-my-zsh.sh
