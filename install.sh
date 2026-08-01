@@ -2,8 +2,8 @@
 
 set -e
 
-GOVERSION=1.26.2
-GOLANG_CI_LINT_VERSION=2.12.1
+GOVERSION=1.26.5
+GOLANG_CI_LINT_VERSION=2.12.2
 
 GREEN='\e[32m'
 YELLOW='\e[33m'
@@ -253,6 +253,16 @@ install_on_ubuntu() {
 		sudo apt install gh -y
 	fi
 	echo "===================================="
+
+	echo "===================================="
+	if which claude; then
+		echo -e "${YELLOW}Claude code already installed; skipping${RESET}"
+	else
+		echo -e "${GREEN}Install claud code${RESET}"
+		curl -fsSL https://claude.ai/install.sh | bash
+	fi
+	echo "===================================="
+
 }
 
 install_on_dgx_spark() {
@@ -262,18 +272,12 @@ install_on_dgx_spark() {
 	echo "===================================="
 
 	echo "===================================="
-	echo -e "${GREEN}installing chromium flatpak${RESET}"
-	flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-	flatpak install flathub org.chromium.Chromium -y
-	echo "===================================="
-
-	echo "===================================="
-	if grep 'disable-gpu-compositing' ~/.var/app/org.chromium.Chromium/config/chromium-flags.conf; then
-		echo -e "${YELLOW}Flatpack Chromium already configured to disable gpu compositing.${RESET}"
+	if which google-chrome; then
+		echo -e "${YELLOW}Google Chrome Already Installed; skipping${RESET}"
 	else
-		echo -e "${GREEN}Configuring Flatpack Chromium to disable gpu compositing${RESET}"
-		mkdir -p ~/.var/app/org.chromium.Chromium/config
-		printf "%s\n" "--disable-gpu-compositing" >> ~/.var/app/org.chromium.Chromium/config/chromium-flags.conf
+		echo -e "${GREEN}Installing google chrome${RESET}"
+		curl "https://dl.google.com/linux/direct/google-chrome-stable_current_arm64.deb" -o ~/Downloads/google-chrome-stable_current_arm64.deb
+		sudo dpkg -i ~/Downloads/google-chrome-stable_current_arm64.deb
 	fi
 	echo "===================================="
 
@@ -298,7 +302,7 @@ install_on_dgx_spark() {
 		sudo update-grub
 	fi
 	echo "===================================="
-	}
+}
 
 install_oh_my_zsh() {
 	echo "===================================="
