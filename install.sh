@@ -304,6 +304,55 @@ install_on_dgx_spark() {
 	echo "===================================="
 }
 
+fix_console_fonts() {
+	changed=0
+
+	echo "===================================="
+	if [ -d ~/code/fonts ]; then
+		echo -e "${YELLOW}skipping powerline fonts checkout: directory already exists${RESET}"
+	else
+		echo -e "${GREEN}checking out powerline fonts${RESET}"
+		git clone https://github.com/powerline/fonts.git ~/code/fonts
+	fi
+	echo "===================================="
+
+	echo "===================================="
+	if [ -f /usr/share/consolefonts/Uni2-PowerLine16.psf.gz ]; then
+		echo -e "${YELLOW}skipping console font install: already installed${RESET}"
+	else
+		echo -e "${GREEN}installing powerline console fonts${RESET}"
+		sudo ~/code/dotfiles/install-psf.sh ~/code/fonts
+		changed=1
+	fi
+	echo "===================================="
+
+	echo "===================================="
+	if [ ! -f /etc/default/console-setup ]; then
+		echo -e "${RED}ERROR: /etc/default/console-setup not found${RESET}"
+		exit -1
+	elif grep -q '^FONTFACE="PowerLine"' /etc/default/console-setup; then
+		echo -e "${YELLOW}skipping console font config: already configured${RESET}"
+	else
+		echo -e "${GREEN}configuring console font${RESET}"
+		sudo sed -i \
+			-e 's/^FONTFACE=.*/FONTFACE="PowerLine"/' \
+			-e 's/^FONTSIZE=.*/FONTSIZE="10x18"/' \
+			/etc/default/console-setup
+		changed=1
+	fi
+	echo "===================================="
+
+	echo "===================================="
+	if [ $changed -eq 0 ]; then
+		echo -e "${YELLOW}skipping console font activation: nothing changed${RESET}"
+	else
+		echo -e "${GREEN}applying console font settings${RESET}"
+		sudo setupcon --save
+		sudo update-initramfs -u
+	fi
+	echo "===================================="
+}
+
 install_oh_my_zsh() {
 	echo "===================================="
 	if [ -d ~/.oh-my-zsh ]; then
@@ -557,6 +606,7 @@ else
 
 fi
 
+fix_console_fonts
 install_oh_my_zsh
 install_rust
 bootstrap_aws_config
